@@ -14,7 +14,11 @@ def create_app():
     auth.init_app(app)
     cache.init_app(app)
     from appone.routes import user_routes
+    from appone.routes import product_routes
+    from appone.routes import cart_routes
     app.register_blueprint(user_routes.bp)
+    app.register_blueprint(product_routes.productbp)
+    app.register_blueprint(cart_routes.cartbp)
     Swagger(app)
 
     return app

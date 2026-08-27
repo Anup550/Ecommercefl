@@ -2,22 +2,24 @@ from appone.extensions import db
 
 
 class Cart(db.Model):
-    id = db.column(db.Integer,primary_key = True)
+    __tablename__="carts"
 
-    user_id = db.column(db.Integer,
-                        db.ForeignKey("User5.id"),
-                        nulleble = False )
+    id = db.Column(db.Integer,primary_key = True)
 
-    product_id = db.column(db.Integer,
-                         db.ForeignKey("Product.id"),
-                         nulleble = False )
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey("users.id"),
+                        nullable = False )
 
-    quantity = db.column(db.Integer,
-                         nullble = False,
+    product_id = db.Column(db.Integer,
+                         db.ForeignKey("products.id"),
+                         nullable = False )
+
+    quantity = db.Column(db.Integer,
+                         nullable = False,
                          default = 1
                          )
 
-    created_at = db.column(db.DateTime,
+    created_at = db.Column(db.DateTime,
                            server_default=db.func.now()
                            )
 
