@@ -10,6 +10,10 @@ export default function Products() {
 
   const { addItem, count } = useCart();
 
+  // ==========================================
+  // GET PRODUCTS
+  // ==========================================
+
   useEffect(() => {
     const loadProducts = async () => {
       const res = await listProducts();
@@ -26,12 +30,26 @@ export default function Products() {
     loadProducts();
   }, []);
 
+
+  // ==========================================
+  // ADD PRODUCT TO CART
+  // ==========================================
+
   const handleAdd = async (product) => {
     try {
-      const res = await addToCart(product.id, 1);
+      // Current test user ID
+      const userId = 1;
 
+      // POST /cart
+      const res = await addToCart(
+        userId,
+        product.id,
+        1
+      );
+
+      // Only update frontend cart
+      // if backend successfully adds product
       if (res.ok) {
-        // Update frontend cart state
         addItem({
           ...product,
           price: Number(product.price),
@@ -42,46 +60,76 @@ export default function Products() {
         setTimeout(() => {
           setJustAdded(null);
         }, 900);
+
       } else {
-        console.error("Add to cart failed:", res.data);
+        console.error("Add to cart failed:", res);
+
         alert(
           res.data?.msg ||
-            res.data?.message ||
-            "Failed to add product to cart"
+          res.data?.message ||
+          "Failed to add product to cart"
         );
       }
+
     } catch (error) {
       console.error("Add to cart error:", error);
+
       alert("Something went wrong while adding the product");
     }
   };
 
+
+  // ==========================================
+  // UI
+  // ==========================================
+
   return (
     <div className="page">
+
       <div className="page__head">
         <h1>Products</h1>
         <p className="muted">GET /products</p>
       </div>
 
-      {loading && <p className="muted">Loading products...</p>}
+
+      {/* Loading */}
+
+      {loading && (
+        <p className="muted">
+          Loading products...
+        </p>
+      )}
+
+
+      {/* Error */}
 
       {error && (
         <div className="banner">
           <strong>Error:</strong>{" "}
+
           {typeof error === "string"
             ? error
             : JSON.stringify(error)}
         </div>
       )}
 
+
+      {/* Products */}
+
       {!loading && !error && (
         <div className="grid">
+
           {products.map((product) => {
             const price = Number(product.price);
 
             return (
-              <div className="product-card" key={product.id}>
+              <div
+                className="product-card"
+                key={product.id}
+              >
+
                 <div className="product-card__top">
+
                   <span className="product-card__id">
                     #{product.id}
                   </span>
@@ -89,13 +137,19 @@ export default function Products() {
                   <span className="product-card__price">
                     ${price.toFixed(2)}
                   </span>
+
                 </div>
 
-                <h3>{product.name}</h3>
+
+                <h3>
+                  {product.name}
+                </h3>
+
 
                 <p className="muted">
                   {product.description}
                 </p>
+
 
                 <button
                   className="btn btn--small"
@@ -105,17 +159,24 @@ export default function Products() {
                     ? "Added ✓"
                     : "Add to cart"}
                 </button>
+
               </div>
             );
           })}
+
         </div>
       )}
 
+
+      {/* Cart count */}
+
       {count > 0 && (
         <div className="floating-cart">
-          {count} item{count > 1 ? "s" : ""} in cart
+          {count} item
+          {count > 1 ? "s" : ""} in cart
         </div>
       )}
+
     </div>
   );
 }
